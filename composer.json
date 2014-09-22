@@ -1,0 +1,23 @@
+{
+    "name": "masnun/joinjobs",
+    "description": "",
+    "authors": [
+        {
+            "name": "Abu Ashraf Masnun",
+            "email": "masnun@transcendio.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Masnun\\Joinjobs\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
