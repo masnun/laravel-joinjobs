@@ -8,7 +8,7 @@
 // This class is a sample of JoinHandler
 
 
-namespace Masnun\Superqueue;
+namespace Masnun\Joinjobs;
 
 class JoinHandler
 {

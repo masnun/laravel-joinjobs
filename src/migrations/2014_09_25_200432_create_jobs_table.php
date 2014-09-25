@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateJoinjobsJobsTable extends Migration {
+class CreateJobsTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,10 +12,10 @@ class CreateJoinjobsJobsTable extends Migration {
 	 */
 	public function up()
 	{
-        Schema::create('masnun_joinjobs_jobs', function($table)
+        Schema::create('masnun_jobs', function($table)
         {
             $table->increments('id');
-            $table->string('joinjob_id', 100);
+            $table->string('join_id', 100);
             $table->boolean('is_complete');
             $table->text('on_complete');
             $table->dateTime('created_at');
@@ -30,7 +30,7 @@ class CreateJoinjobsJobsTable extends Migration {
 	 */
 	public function down()
 	{
-        Schema::drop('masnun_joinjobs_jobs');
+        Schema::drop('masnun_jobs');
 	}
 
 }

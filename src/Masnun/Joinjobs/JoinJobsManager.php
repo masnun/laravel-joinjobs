@@ -2,19 +2,19 @@
 
 namespace Masnun\Joinjobs;
 
-use Masnun\Joinjobs\Models\Joinjob;
+use Masnun\Joinjobs\Models\Join;
 use Masnun\Joinjobs\Models\Job;
 use Jeremeamia\SuperClosure\SerializableClosure;
 
 class JoinJobsManager
 {
-    public function getCurrentJoinjobs()
+    public function getCurrentJoins()
     {
-        return Joinjob::where('is_complete', '=', false)->get();
+        return Join::where('is_complete', '=', false)->get();
     }
 
     // Clasess & Closures
-    public function createJoinJob($handler = null)
+    public function createJoin($handler = null)
     {
         if (is_object($handler) && $handler instanceof \Closure) {
             $handler = new SerializableClosure($handler);
@@ -23,15 +23,15 @@ class JoinJobsManager
             $handler = (string)$handler;
         }
 
-        $joinjob = new Joinjob();
-        $joinjob->join_handler = $handler;
-        $joinjob->save();
+        $join = new Join();
+        $join->join_handler = $handler;
+        $join->save();
 
-        return $joinjob->id;
+        return $join->id;
     }
 
     // Accept additional closure
-    public function addJob($joinjobId, $handler = null)
+    public function addJob($joinId, $handler = null)
     {
 
         if (is_object($handler) && $handler instanceof \Closure) {
@@ -43,7 +43,7 @@ class JoinJobsManager
 
         $job = new Job();
         $job->created_at = new \DateTime();
-        $job->joinjob_id = $joinjobId;
+        $job->join_id = $joinId;
         $job->on_complete = $handler;
         $job->save();
 
@@ -65,7 +65,7 @@ class JoinJobsManager
         return $job->save();
     }
 
-    public function addHandlerToJoinJob($joinjobId, $handler)
+    public function addHandlerToJoin($joinId, $handler)
     {
         if (is_object($handler) && $handler instanceof \Closure) {
             $handler = new SerializableClosure($handler);
@@ -74,9 +74,9 @@ class JoinJobsManager
             $handler = (string)$handler;
         }
 
-        $joinjob = Joinjob::findOrFail($joinjobId);
-        $joinjob->join_handler = $handler;
-        return $joinjob->save();
+        $join = Join::findOrFail($joinId);
+        $join->join_handler = $handler;
+        return $join->save();
     }
 
     public function completeJob($jobId)
@@ -98,22 +98,22 @@ class JoinJobsManager
         }
 
 
-        $this->processJoinJob($job->joinjob_id);
+        $this->processJoin($job->join_id);
     }
 
-    public function processJoinJob($joinjobId)
+    public function processJoin($joinId)
     {
-        $joinjob = Joinjob::findOrFail($joinjobId);
-        $incompleteJobsCount = Job::where('joinjob_id', '=', $joinjobId)
+        $join = Join::findOrFail($joinId);
+        $incompleteJobsCount = Job::where('join_id', '=', $joinId)
             ->where('is_complete', '=', false)
             ->count();
 
         if ($incompleteJobsCount < 1) {
 
-            $joinjob->is_complete = 1;
-            $joinjob->save();
+            $join->is_complete = 1;
+            $join->save();
 
-            $handler = $joinjob->join_handler;
+            $handler = $join->join_handler;
             if (!empty($handler)) {
                 if ($joinHandler = @unserialize($handler)) {
                     call_user_func($joinHandler);

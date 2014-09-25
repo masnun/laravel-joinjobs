@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateJoinjobsTable extends Migration {
+class CreateJoinsTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,7 +12,7 @@ class CreateJoinjobsTable extends Migration {
 	 */
 	public function up()
 	{
-        Schema::create('masnun_joinjobs', function($table)
+        Schema::create('masnun_joins', function($table)
         {
             $table->increments('id');
             $table->text('join_handler', 250);
@@ -27,7 +27,7 @@ class CreateJoinjobsTable extends Migration {
 	 */
 	public function down()
 	{
-        Schema::drop('masnun_joinjobs');
+        Schema::drop('masnun_joins');
 	}
 
 }
