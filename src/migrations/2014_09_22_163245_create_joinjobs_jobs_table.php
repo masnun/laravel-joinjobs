@@ -17,6 +17,7 @@ class CreateJoinjobsJobsTable extends Migration {
             $table->increments('id');
             $table->string('joinjob_id', 100);
             $table->boolean('is_complete');
+            $table->text('on_complete');
             $table->dateTime('created_at');
             $table->dateTime('completed_at');
         });

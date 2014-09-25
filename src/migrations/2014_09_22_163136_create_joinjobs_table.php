@@ -15,7 +15,7 @@ class CreateJoinjobsTable extends Migration {
         Schema::create('masnun_joinjobs', function($table)
         {
             $table->increments('id');
-            $table->string('join_handler', 250);
+            $table->text('join_handler', 250);
             $table->boolean('is_complete');
         });
 	}
