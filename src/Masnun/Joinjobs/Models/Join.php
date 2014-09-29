@@ -5,7 +5,7 @@ namespace Masnun\Joinjobs\Models;
 // Join, not JoinJob
 class Join extends \Eloquent
 {
-    protected $table = "masnun_joinjobs";
+    protected $table = "masnun_joins";
     public $timestamps = false;
 
     public function jobs()
