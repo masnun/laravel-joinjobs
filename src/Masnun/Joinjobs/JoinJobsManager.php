@@ -16,28 +16,35 @@ class JoinJobsManager
     // Clasess & Closures
     public function createJoin($handler = null)
     {
-        if (is_object($handler) && $handler instanceof \Closure) {
+        if (is_object($handler) && $handler instanceof \Closure)
+        {
             $handler = new SerializableClosure($handler);
             $handler = serialize($handler);
-        } else {
+        }
+        else
+        {
             $handler = (string)$handler;
         }
 
         $join = new Join();
         $join->join_handler = $handler;
+        $join->fully_dispatched = false;
         $join->save();
 
         return $join->id;
     }
 
     // Accept additional closure
-    public function addJob($joinId, $handler = null)
+    public function addJob($joinId, $handler = null, $isLastJob = false)
     {
 
-        if (is_object($handler) && $handler instanceof \Closure) {
+        if (is_object($handler) && $handler instanceof \Closure)
+        {
             $handler = new SerializableClosure($handler);
             $handler = serialize($handler);
-        } else {
+        }
+        else
+        {
             $handler = (string)$handler;
         }
 
@@ -47,16 +54,24 @@ class JoinJobsManager
         $job->on_complete = $handler;
         $job->save();
 
+        if ($isLastJob)
+        {
+            $this->setFullyDispatched($joinId);
+        }
+
         return $job->id;
     }
 
 
     public function addHandlerToJob($jobId, $handler)
     {
-        if (is_object($handler) && $handler instanceof \Closure) {
+        if (is_object($handler) && $handler instanceof \Closure)
+        {
             $handler = new SerializableClosure($handler);
             $handler = serialize($handler);
-        } else {
+        }
+        else
+        {
             $handler = (string)$handler;
         }
 
@@ -67,16 +82,29 @@ class JoinJobsManager
 
     public function addHandlerToJoin($joinId, $handler)
     {
-        if (is_object($handler) && $handler instanceof \Closure) {
+        if (is_object($handler) && $handler instanceof \Closure)
+        {
             $handler = new SerializableClosure($handler);
             $handler = serialize($handler);
-        } else {
+        }
+        else
+        {
             $handler = (string)$handler;
         }
 
         $join = Join::findOrFail($joinId);
         $join->join_handler = $handler;
         return $join->save();
+    }
+
+
+    public function setFullyDispatched($joinId)
+    {
+        $join = Join::findOrFail($joinId);
+        $join->fully_dispatched = true;
+        $result = $join->save();
+        $this->processJoin($joinId);
+        return $result;
     }
 
     public function completeJob($jobId)
@@ -88,10 +116,14 @@ class JoinJobsManager
 
         $handler = $job->on_complete;
 
-        if (!empty($handler)) {
-            if ($jobHandler = @unserialize($handler)) {
+        if (!empty($handler))
+        {
+            if ($jobHandler = @unserialize($handler))
+            {
                 call_user_func($jobHandler);
-            } else {
+            }
+            else
+            {
                 $jobHandler = new $handler();
                 $jobHandler->join();
             }
@@ -108,16 +140,21 @@ class JoinJobsManager
             ->where('is_complete', '=', false)
             ->count();
 
-        if ($incompleteJobsCount < 1) {
+        if ($incompleteJobsCount < 1 && $join->fully_dispatched)
+        {
 
             $join->is_complete = 1;
             $join->save();
 
             $handler = $join->join_handler;
-            if (!empty($handler)) {
-                if ($joinHandler = @unserialize($handler)) {
+            if (!empty($handler))
+            {
+                if ($joinHandler = @unserialize($handler))
+                {
                     call_user_func($joinHandler);
-                } else {
+                }
+                else
+                {
                     $joinHandler = new $handler();
                     $joinHandler->join();
                 }
