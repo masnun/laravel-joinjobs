@@ -14,7 +14,7 @@ class JoinJobsManager
     }
 
     // Clasess & Closures
-    public function createJoin($handler = null)
+    public function createJoin($handler = null, $autoDelete = false)
     {
         if (is_object($handler) && $handler instanceof \Closure)
         {
@@ -29,6 +29,8 @@ class JoinJobsManager
         $join = new Join();
         $join->join_handler = $handler;
         $join->fully_dispatched = false;
+        $join->auto_delete = $autoDelete;
+        $join->created_at = new \DateTime();
         $join->save();
 
         return $join->id;
@@ -144,6 +146,7 @@ class JoinJobsManager
         {
 
             $join->is_complete = 1;
+            $join->completed_at = new \DateTime();
             $join->save();
 
             $handler = $join->join_handler;
@@ -158,6 +161,11 @@ class JoinJobsManager
                     $joinHandler = new $handler();
                     $joinHandler->join();
                 }
+            }
+
+            if ($join->auto_delete)
+            {
+                $join->delete();
             }
 
 
