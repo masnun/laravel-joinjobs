@@ -36,39 +36,51 @@ php artisan migrate --package=masnun/joinjobs
 
 ### Using the API
 
+The process is simple: 
+
+* Create a new join, pass it a handler. Choose whether it should be auto deleted or not. The handler could be a closure or fully qualified class name that has a `run()` method. The second parameter is for auto deletion. 
+
+* We add jobs to the Join. Each job can take an optional closure/class to be executed. 
+
+* We have to let the system know when all jobs have been dispatched. We can pass the optional 3rd argument to a job as `true` to mark it as the last job. Or alternatively we can call the `setFullyDispatched($joinId)` method on the JoinJobsManager. 
+
+	Eg. `$joinjobsManager->setFullyDispatched($joinId)`  
+	
+	This is a requirement to make sure that our JoinHandler is not executed before all jobs have been dispatched while using a `sync` driver. 
+ 
+
 #### Creating a new Join and adding jobs to it
 
 ```php
-	// Create a new JoinJobsManager object
+ 	 
+ 	 // Create a new manager
     $joinjobsManager = new JoinJobsManager();
 
-    // Create a join, pass a closure to be executed
-    // when all the jobs are finished
+    // We create a new join, set auto deletion to true
+    $joinId = $joinjobsManager->createJoin(null, true);
     
-    $queueId = $joinjobsManager->createJoin();
-    $joinjobsManager->addHandlerToJoin($queueId, function() {
+    $joinjobsManager->addHandlerToJoin($joinId, function() {
             echo "The Join successfully completed!";
     });
 
-    // Add a job to that join
-    $jobId = $joinjobsManager->addJob($queueId);
+    // addJob()
+    $jobId = $joinjobsManager->addJob($joinId);
 
-	// Use Laravel's API to push some jobs
+
     Queue::push('DemoJob', ['jobId' => $jobId, 'sleepDuration' => 5]);
-    
-	// We can add a handler once a job is created
+
     $joinjobsManager->addHandlerToJob($jobId, function() use($jobId) {
             echo "Completed Job ID: {$jobId}";
     });
 
-	// Or we can also pass a handler as the second paramter
-	// of addJob() method. We can also pass a class name
-	// which has a method called join()
-	$jobId = $joinjobsManager->addJob($queueId, "\\Masnun\\Joinjobs\\JoinHandler");
+	// This job is the last one, we are not adding any more jobs
+    $jobId = $joinjobsManager->addJob($joinId, "\\Masnun\\Joinjobs\\JoinHandler", true);
     Queue::push('DemoJob', ['jobId' => $jobId, 'sleepDuration' => 10]);
 
     return "Added two jobs!";
-  ```
+
+
+```
   
 #### Marking a Job Complete
 
@@ -97,4 +109,14 @@ class DemoJob
 }
 ```
 
+#### Auto Deletion
+
+The `createJoin()` method takes a second optional argument. If we set it true, the join and all jobs related to it will be deleted. 
+
+#### Manual Deletion
+
+
+	$joinjobsManager->deleteJoin($joinId);
+	
+That should delete the join and all the jobs belonging to it. 
 

@@ -127,7 +127,7 @@ class JoinJobsManager
             else
             {
                 $jobHandler = new $handler();
-                $jobHandler->join();
+                $jobHandler->run();
             }
         }
 
@@ -159,12 +159,13 @@ class JoinJobsManager
                 else
                 {
                     $joinHandler = new $handler();
-                    $joinHandler->join();
+                    $joinHandler->run();
                 }
             }
 
             if ($join->auto_delete)
             {
+                Job::where('join_id', '=', $joinId)->delete();
                 $join->delete();
             }
 
@@ -172,6 +173,14 @@ class JoinJobsManager
         }
 
 
+    }
+
+
+    public function deleteJoin($joinId)
+    {
+        $join = Join::findOrFail($joinId);
+        Job::where('join_id', '=', $joinId)->delete();
+        $join->delete();
     }
 
 }

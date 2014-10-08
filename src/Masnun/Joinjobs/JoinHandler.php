@@ -12,7 +12,7 @@ namespace Masnun\Joinjobs;
 
 class JoinHandler
 {
-    public function join()
+    public function run()
     {
         echo "All done!" . PHP_EOL;
         mail("masnun@gmail.com", "test job ok", "done!");
