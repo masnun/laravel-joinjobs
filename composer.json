@@ -1,6 +1,7 @@
 {
     "name": "masnun/joinjobs",
     "description": "",
+    "keywords": ["laravel", "jobs", "join"],
     "authors": [
         {
             "name": "Abu Ashraf Masnun",

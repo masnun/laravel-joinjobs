@@ -61,6 +61,7 @@ class JoinJobsManager
             $this->setFullyDispatched($joinId);
         }
 
+        $this->increaseJobsDispatchedCount($joinId);
         return $job->id;
     }
 
@@ -131,7 +132,7 @@ class JoinJobsManager
             }
         }
 
-
+        $this->increaseJobsCompletedCount($job->join_id);
         $this->processJoin($job->join_id);
     }
 
@@ -175,12 +176,34 @@ class JoinJobsManager
 
     }
 
+    public function getJobsStats($joinId)
+    {
+        $join = Join::findOrFail($joinId);
+        return [
+          'dispatched' => $join->jobs_dispatched,
+          'completed' => $join->jobs_completed
+        ];
+    }
 
     public function deleteJoin($joinId)
     {
         $join = Join::findOrFail($joinId);
         Job::where('join_id', '=', $joinId)->delete();
         $join->delete();
+    }
+
+    protected function increaseJobsDispatchedCount($joinId)
+    {
+        $join = Join::findOrFail($joinId);
+        $join->jobs_dispatched = (int)$join->jobs_dispatched + 1;
+        return $join->save();
+    }
+
+    protected function increaseJobsCompletedCount($joinId)
+    {
+        $join = Join::findOrFail($joinId);
+        $join->jobs_completed = (int)$join->jobs_completed + 1;
+        return $join->save();
     }
 
 }
