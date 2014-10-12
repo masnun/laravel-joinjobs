@@ -1,6 +1,6 @@
 {
     "name": "masnun/joinjobs",
-    "description": "",
+    "description": "A Laravel package that allows scheduling certain actions upon job completion or queue exhaustion.",
     "keywords": ["laravel", "jobs", "join"],
     "authors": [
         {
