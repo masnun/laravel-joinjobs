@@ -14,8 +14,8 @@ class AddJobsCountToJoin extends Migration {
 	{
         Schema::table('masnun_joins', function($table)
         {
-            $table->integer('jobs_dispatched');
-            $table->integer('jobs_completed');
+            $table->integer('jobs_dispatched')->nullable();
+            $table->integer('jobs_completed')->nullable();
         });
 	}
 

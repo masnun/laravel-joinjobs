@@ -16,7 +16,7 @@ class AutoDeleteAndCompletedAtFields extends Migration {
         {
             $table->boolean('auto_delete');
             $table->dateTime('created_at');
-            $table->dateTime('completed_at');
+            $table->dateTime('completed_at')->nullable();
 
         });
 	}

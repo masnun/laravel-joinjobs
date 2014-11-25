@@ -16,7 +16,7 @@ class CreateJoinsTable extends Migration {
         {
             $table->increments('id');
             $table->text('join_handler', 250);
-            $table->boolean('is_complete');
+            $table->boolean('is_complete')->nullable();
         });
 	}
 

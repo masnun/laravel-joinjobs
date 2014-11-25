@@ -15,7 +15,7 @@ class CreateJobsTable extends Migration {
         Schema::create('masnun_jobs', function($table)
         {
             $table->increments('id');
-            $table->string('join_id', 100);
+            $table->string('join_id', 100)->nullable();
             $table->boolean('is_complete');
             $table->text('on_complete');
             $table->dateTime('created_at');
